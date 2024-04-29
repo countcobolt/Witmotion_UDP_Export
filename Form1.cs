@@ -25,12 +25,15 @@ namespace Motion_Sim
         public Form1()
         {
             InitializeComponent();
-            combo_load();
-            baudComboBox.SelectedItem = 9600;
+            combo_load_ports();
+            combo_load_bauds();
+            baudComboBox.SelectedItem = 115200;
             toolStripStatusLabel2.Text = "";
             cal_count = (int)CalAmount.Value;
             Recalibate.Enabled = false;
             CNT_Button.Enabled = false;
+            CMB_RELOAD.Font= new Font("Wingdings 3", 10, FontStyle.Bold);
+            CMB_RELOAD.Text = Char.ConvertFromUtf32(81); // or 80
             this.KeyPreview = true; // Enables form-level key events
             this.KeyDown += Form1_KeyDown; // Event handler for key down events
             ToolTip toolTip1 = new ToolTip();
@@ -82,7 +85,7 @@ namespace Motion_Sim
         {
             try
             {
-                IPAddress remoteIPAddress = IPAddress.Parse("127.0.0.1"); // Example IP address
+                IPAddress remoteIPAddress = IPAddress.Parse(txtIP.Text); // Example IP address
                 int remotePort = (int)UDPPort.Value; // Port 20789
                 using (UdpClient client = new UdpClient())
                 {
@@ -95,12 +98,16 @@ namespace Motion_Sim
                 Console.WriteLine("An error occurred while sending data over UDP: " + ex.Message);
             }
         }
-        private void combo_load()
+        private void combo_load_ports()
         {
+            comboBox1.Items.Clear();
             foreach ( var i in SerialPort.GetPortNames()) 
             { 
                 comboBox1.Items.Add( i );   
             }
+        }
+        private void combo_load_bauds()
+        {
             for (int i = 0; i < SupportBaudRateList.Count; i++)
             {
                 baudComboBox.Items.Add(SupportBaudRateList[i]);
@@ -187,10 +194,10 @@ namespace Motion_Sim
                 {
                     try
                     {
-                        cal_count--;
+                        
                         toolStripStatusLabel1.Text = cal_count + " Calibrating";
-                        Total_X = Total_X + (double)JY901.GetDeviceData(WitSensorKey.AngleX);
-                        Total_Y = Total_Y + (double)JY901.GetDeviceData(WitSensorKey.AngleY);
+                        Total_X += (double)JY901.GetDeviceData(WitSensorKey.AngleX);
+                        Total_Y += (double)JY901.GetDeviceData(WitSensorKey.AngleY);
                     }
                     catch ( Exception ex) 
                     {
@@ -198,7 +205,7 @@ namespace Motion_Sim
                         cal_count++;
                         System.Threading.Thread.Sleep(50);
                     }
-                    
+                    cal_count--;
                 }
                 else if (cal_count == 0 && calibrated == false)
                 {
@@ -219,7 +226,7 @@ namespace Motion_Sim
                 {
                     if (JY901.IsOpen())
                     {
-                        (Int32 currentX, Int32 currentY) = GetDeviceData(JY901);
+                        (Int32 currentX, Int32 currentY) = GetDeviceDataCST(JY901);
                         toolStripStatusLabel2.Text = "CX=" + ((double)currentX / 100).ToString() + " CY= " + ((double)currentY / 100).ToString();
                         byte[] currentXBytes = BitConverter.GetBytes(currentX);
                         byte[] currentYBytes = BitConverter.GetBytes(currentY);
@@ -239,7 +246,7 @@ namespace Motion_Sim
                 Thread.Sleep((int)NUP_refresh.Value);
             }
         }
-        private (Int32,Int32) GetDeviceData(JY901 JY901)
+        private (Int32,Int32) GetDeviceDataCST(JY901 JY901)
         {
             Int32 current_X =(Int32)(Math.Round((double)(JY901.GetDeviceData(WitSensorKey.AngleX)) - Total_X, 2)*100);
             Int32 current_Y =(Int32)(Math.Round((double)(JY901.GetDeviceData(WitSensorKey.AngleY)) - Total_Y,2)*100);
@@ -304,6 +311,11 @@ namespace Motion_Sim
         private void label6_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            combo_load_ports();
         }
     }
 }

@@ -50,6 +50,9 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label6 = new System.Windows.Forms.Label();
             this.NUP_refresh = new System.Windows.Forms.NumericUpDown();
+            this.CMB_RELOAD = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtIP = new System.Windows.Forms.TextBox();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UDPPort)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.deadzone)).BeginInit();
@@ -63,7 +66,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(144, 26);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(171, 21);
+            this.comboBox1.Size = new System.Drawing.Size(139, 21);
             this.comboBox1.TabIndex = 0;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -199,7 +202,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(46, 147);
+            this.label5.Location = new System.Drawing.Point(46, 185);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(94, 13);
             this.label5.TabIndex = 15;
@@ -207,7 +210,7 @@
             // 
             // CalAmount
             // 
-            this.CalAmount.Location = new System.Drawing.Point(145, 145);
+            this.CalAmount.Location = new System.Drawing.Point(145, 183);
             this.CalAmount.Maximum = new decimal(new int[] {
             200,
             0,
@@ -263,7 +266,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(46, 188);
+            this.label6.Location = new System.Drawing.Point(46, 217);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(66, 13);
             this.label6.TabIndex = 17;
@@ -272,7 +275,7 @@
             // 
             // NUP_refresh
             // 
-            this.NUP_refresh.Location = new System.Drawing.Point(144, 186);
+            this.NUP_refresh.Location = new System.Drawing.Point(144, 215);
             this.NUP_refresh.Maximum = new decimal(new int[] {
             10,
             0,
@@ -287,16 +290,46 @@
             this.NUP_refresh.Size = new System.Drawing.Size(170, 20);
             this.NUP_refresh.TabIndex = 18;
             this.NUP_refresh.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             0});
+            // 
+            // CMB_RELOAD
+            // 
+            this.CMB_RELOAD.Location = new System.Drawing.Point(289, 26);
+            this.CMB_RELOAD.Name = "CMB_RELOAD";
+            this.CMB_RELOAD.Size = new System.Drawing.Size(26, 21);
+            this.CMB_RELOAD.TabIndex = 19;
+            this.CMB_RELOAD.Text = "RELOAD";
+            this.CMB_RELOAD.UseVisualStyleBackColor = true;
+            this.CMB_RELOAD.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(45, 139);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(68, 13);
+            this.label7.TabIndex = 20;
+            this.label7.Text = "Broadcast IP";
+            // 
+            // txtIP
+            // 
+            this.txtIP.Location = new System.Drawing.Point(143, 136);
+            this.txtIP.Name = "txtIP";
+            this.txtIP.Size = new System.Drawing.Size(171, 20);
+            this.txtIP.TabIndex = 21;
+            this.txtIP.Text = "127.0.0.1";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(360, 470);
+            this.Controls.Add(this.txtIP);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.CMB_RELOAD);
             this.Controls.Add(this.NUP_refresh);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -354,6 +387,9 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown NUP_refresh;
+        private System.Windows.Forms.Button CMB_RELOAD;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtIP;
     }
 }
 
