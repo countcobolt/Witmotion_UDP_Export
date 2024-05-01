@@ -9,9 +9,17 @@ using System.Net;
 using System.Net.Sockets;
 using System.Drawing;
 using Wit.SDK.Device.Sensor.Device.Utils;
+using System.IO;
+using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 
 namespace Motion_Sim
 {
+    public struct MmfData
+    {
+        public double sway, surge, heave, yaw, roll, pitch;
+    }
+
     public partial class Form1 : Form
     {
         public JY901 JY901 { get; set; } = new JY901();
@@ -190,19 +198,19 @@ namespace Motion_Sim
         {
             while (EnableRefreshDataTh)
             {
-                if (cal_count > 0 && calibrated == false)
+                if (cal_count >= 1 && calibrated == false)
                 {
                     try
                     {
-                        
-                        toolStripStatusLabel1.Text = cal_count + " Calibrating";
                         Total_X += (double)JY901.GetDeviceData(WitSensorKey.AngleX);
                         Total_Y += (double)JY901.GetDeviceData(WitSensorKey.AngleY);
+                        toolStripStatusLabel1.Text = cal_count + " Calibrating";
                     }
                     catch ( Exception ex) 
                     {
-                        //  MessageBox.Show(ex.Message);
+                        Console.WriteLine(" Exception during calibration" + ex.Message);
                         cal_count++;
+                        toolStripStatusLabel1.Text = "Initializing";
                         System.Threading.Thread.Sleep(50);
                     }
                     cal_count--;
@@ -224,10 +232,26 @@ namespace Motion_Sim
                 }
                 else
                 {
-                    if (JY901.IsOpen())
+                    (Int32 currentX, Int32 currentY) = GetDeviceDataCST(JY901);
+                    if (CHK_SWP_X.Checked) { currentX = -currentX; }
+                    if (CHK_SWP_Y.Checked) { currentY = -currentY; }
+                    if (CHK_SWP.Checked)
                     {
-                        (Int32 currentX, Int32 currentY) = GetDeviceDataCST(JY901);
-                        toolStripStatusLabel2.Text = "CX=" + ((double)currentX / 100).ToString() + " CY= " + ((double)currentY / 100).ToString();
+                        Int32 temp = currentX;
+                        currentX = currentY;
+                        currentY = temp;
+                    }
+                    MmfData data = new MmfData
+                    {
+                        sway = 0.0,     // Assign some value to sway
+                        surge = 0.0,    // Assign some value to surge
+                        heave = 0.0,    // Assign some value to heave
+                        yaw = 0.0,      // Assign some value to yaw
+                        roll = (double)currentY/100,     // Assign some value to roll
+                        pitch = (double)currentX/100    // Assign some value to pitch
+                    };
+                    if (CHK_MMF.Checked) { WriteToFile(data); }
+                    if (CHK_UDP.Checked) { 
                         byte[] currentXBytes = BitConverter.GetBytes(currentX);
                         byte[] currentYBytes = BitConverter.GetBytes(currentY);
                         try
@@ -239,13 +263,50 @@ namespace Motion_Sim
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("An error occurred: " + ex.Message);
+                            Console.WriteLine("An error occurred while sending over UDP: " + ex.Message);
                         }
                     }
+                    toolStripStatusLabel2.Text = "CX=" + ((double)currentX / 100).ToString() + " CY= " + ((double)currentY / 100).ToString();
                 }
                 Thread.Sleep((int)NUP_refresh.Value);
             }
         }
+        public static bool WriteToFile(MmfData data)
+        {
+            string fileName = "Local\\motionRigPose"; // Use the same file name as in the software
+            int size = Marshal.SizeOf<MmfData>(); // Get the size of the data structure
+
+            try
+            {
+                MemoryMappedFile file;
+
+                try
+                {
+                    // Attempt to open the file. If it doesn't exist, this will throw a FileNotFoundException
+                    file = MemoryMappedFile.OpenExisting(fileName, MemoryMappedFileRights.ReadWrite);
+                }
+                catch (FileNotFoundException)
+                {
+                    // If the file doesn't exist, create a new one
+                    file = MemoryMappedFile.CreateNew(fileName, size);
+                }
+
+                using (MemoryMappedViewAccessor accessor = file.CreateViewAccessor(0, size))
+                {
+                    accessor.Write(0, ref data); // Write the data to the memory-mapped file
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error writing to memory-mapped file: " + ex.Message);
+                return false;
+            }
+        }
+
+//THIS FUNCTION CAN BE REWRITTEN AND REMOVE *100
+
         private (Int32,Int32) GetDeviceDataCST(JY901 JY901)
         {
             Int32 current_X =(Int32)(Math.Round((double)(JY901.GetDeviceData(WitSensorKey.AngleX)) - Total_X, 2)*100);
@@ -316,6 +377,19 @@ namespace Motion_Sim
         private void button1_Click_1(object sender, EventArgs e)
         {
             combo_load_ports();
+        }
+
+        private void CHK_UDP_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!CHK_UDP.Checked)
+            {
+                UDPPort.Enabled = false;
+                txtIP.Enabled = false;
+            }
+            else { 
+                UDPPort.Enabled = true;
+                txtIP.Enabled = true;
+            }
         }
     }
 }
