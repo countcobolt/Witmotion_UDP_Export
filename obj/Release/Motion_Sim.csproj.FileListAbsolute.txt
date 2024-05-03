@@ -11,16 +11,3 @@ C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.cspr
 C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.csproj.Up2Date
 C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.exe
 C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.pdb
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\bin\Release\Motion_Sim.exe.config
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\bin\Release\Motion_Sim.exe
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\bin\Release\Motion_Sim.pdb
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\bin\Release\Wit.OpenSDK.dll
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\bin\Release\Windows.winmd
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.csproj.AssemblyReference.cache
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.Form1.resources
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.Properties.Resources.resources
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.csproj.GenerateResource.cache
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.csproj.CoreCompileInputs.cache
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.csproj.Up2Date
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.exe
-C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.pdb

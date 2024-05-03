@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.CMB_Serial = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.CNT_Button = new System.Windows.Forms.Button();
@@ -54,12 +54,13 @@
             this.CHK_SWP_Y = new System.Windows.Forms.CheckBox();
             this.CHK_SWP = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtIP = new System.Windows.Forms.TextBox();
-            this.UDPPort = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.CHK_UDP = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.UDPPort = new System.Windows.Forms.NumericUpDown();
+            this.txtIP = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.CHK_YAW = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.statusStrip1.SuspendLayout();
@@ -74,14 +75,14 @@
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
-            // comboBox1
+            // CMB_Serial
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(108, 18);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(139, 21);
-            this.comboBox1.TabIndex = 0;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.CMB_Serial.FormattingEnabled = true;
+            this.CMB_Serial.Location = new System.Drawing.Point(108, 18);
+            this.CMB_Serial.Name = "CMB_Serial";
+            this.CMB_Serial.Size = new System.Drawing.Size(139, 21);
+            this.CMB_Serial.TabIndex = 0;
+            this.CMB_Serial.SelectedIndexChanged += new System.EventHandler(this.CMD_Serial_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -103,13 +104,13 @@
             // 
             // CNT_Button
             // 
-            this.CNT_Button.Location = new System.Drawing.Point(71, 432);
+            this.CNT_Button.Location = new System.Drawing.Point(71, 451);
             this.CNT_Button.Name = "CNT_Button";
             this.CNT_Button.Size = new System.Drawing.Size(188, 32);
             this.CNT_Button.TabIndex = 4;
             this.CNT_Button.Text = "Connect and Broadcast";
             this.CNT_Button.UseVisualStyleBackColor = true;
-            this.CNT_Button.Click += new System.EventHandler(this.button1_Click);
+            this.CNT_Button.Click += new System.EventHandler(this.CNT_Button_Click);
             // 
             // baudComboBox
             // 
@@ -139,7 +140,7 @@
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(268, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(255, 17);
             this.toolStripStatusLabel2.Spring = true;
             this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
             this.toolStripStatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -147,7 +148,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(11, 81);
+            this.label4.Location = new System.Drawing.Point(11, 95);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 10;
@@ -155,7 +156,7 @@
             // 
             // deadzone
             // 
-            this.deadzone.Location = new System.Drawing.Point(110, 81);
+            this.deadzone.Location = new System.Drawing.Point(110, 95);
             this.deadzone.Maximum = 40;
             this.deadzone.Name = "deadzone";
             this.deadzone.Size = new System.Drawing.Size(104, 45);
@@ -165,7 +166,7 @@
             // 
             // txtDeadZone
             // 
-            this.txtDeadZone.Location = new System.Drawing.Point(231, 81);
+            this.txtDeadZone.Location = new System.Drawing.Point(231, 95);
             this.txtDeadZone.Name = "txtDeadZone";
             this.txtDeadZone.Size = new System.Drawing.Size(49, 20);
             this.txtDeadZone.TabIndex = 12;
@@ -173,7 +174,7 @@
             // 
             // Recalibate
             // 
-            this.Recalibate.Location = new System.Drawing.Point(71, 470);
+            this.Recalibate.Location = new System.Drawing.Point(71, 489);
             this.Recalibate.Name = "Recalibate";
             this.Recalibate.Size = new System.Drawing.Size(188, 32);
             this.Recalibate.TabIndex = 13;
@@ -184,7 +185,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 22);
+            this.label5.Location = new System.Drawing.Point(12, 47);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(94, 13);
             this.label5.TabIndex = 15;
@@ -192,7 +193,7 @@
             // 
             // CalAmount
             // 
-            this.CalAmount.Location = new System.Drawing.Point(111, 20);
+            this.CalAmount.Location = new System.Drawing.Point(111, 45);
             this.CalAmount.Maximum = new decimal(new int[] {
             200,
             0,
@@ -248,16 +249,15 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 54);
+            this.label6.Location = new System.Drawing.Point(12, 73);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(66, 13);
             this.label6.TabIndex = 17;
             this.label6.Text = "Refresh time";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // NUP_refresh
             // 
-            this.NUP_refresh.Location = new System.Drawing.Point(110, 52);
+            this.NUP_refresh.Location = new System.Drawing.Point(110, 71);
             this.NUP_refresh.Maximum = new decimal(new int[] {
             10,
             0,
@@ -285,12 +285,12 @@
             this.CMB_RELOAD.TabIndex = 19;
             this.CMB_RELOAD.Text = "RELOAD";
             this.CMB_RELOAD.UseVisualStyleBackColor = true;
-            this.CMB_RELOAD.Click += new System.EventHandler(this.button1_Click_1);
+            this.CMB_RELOAD.Click += new System.EventHandler(this.CMB_RELOAD_Click_1);
             // 
             // CHK_MMF
             // 
             this.CHK_MMF.AutoSize = true;
-            this.CHK_MMF.Location = new System.Drawing.Point(15, 24);
+            this.CHK_MMF.Location = new System.Drawing.Point(15, 19);
             this.CHK_MMF.Name = "CHK_MMF";
             this.CHK_MMF.Size = new System.Drawing.Size(86, 17);
             this.CHK_MMF.TabIndex = 22;
@@ -300,31 +300,31 @@
             // CHK_SWP_X
             // 
             this.CHK_SWP_X.AutoSize = true;
-            this.CHK_SWP_X.Location = new System.Drawing.Point(15, 46);
+            this.CHK_SWP_X.Location = new System.Drawing.Point(159, 19);
             this.CHK_SWP_X.Name = "CHK_SWP_X";
-            this.CHK_SWP_X.Size = new System.Drawing.Size(88, 17);
+            this.CHK_SWP_X.Size = new System.Drawing.Size(80, 17);
             this.CHK_SWP_X.TabIndex = 23;
-            this.CHK_SWP_X.Text = "Inverse Pitch";
+            this.CHK_SWP_X.Text = "Invert Pitch";
             this.CHK_SWP_X.UseVisualStyleBackColor = true;
             // 
             // CHK_SWP_Y
             // 
             this.CHK_SWP_Y.AutoSize = true;
-            this.CHK_SWP_Y.Location = new System.Drawing.Point(150, 46);
+            this.CHK_SWP_Y.Location = new System.Drawing.Point(159, 42);
             this.CHK_SWP_Y.Name = "CHK_SWP_Y";
-            this.CHK_SWP_Y.Size = new System.Drawing.Size(82, 17);
+            this.CHK_SWP_Y.Size = new System.Drawing.Size(74, 17);
             this.CHK_SWP_Y.TabIndex = 24;
-            this.CHK_SWP_Y.Text = "Inverse Roll";
+            this.CHK_SWP_Y.Text = "Invert Roll";
             this.CHK_SWP_Y.UseVisualStyleBackColor = true;
             // 
             // CHK_SWP
             // 
             this.CHK_SWP.AutoSize = true;
-            this.CHK_SWP.Location = new System.Drawing.Point(150, 24);
+            this.CHK_SWP.Location = new System.Drawing.Point(159, 65);
             this.CHK_SWP.Name = "CHK_SWP";
-            this.CHK_SWP.Size = new System.Drawing.Size(104, 17);
+            this.CHK_SWP.Size = new System.Drawing.Size(77, 17);
             this.CHK_SWP.TabIndex = 25;
-            this.CHK_SWP.Text = "Swap Pitch & Roll";
+            this.CHK_SWP.Text = "Invert Yaw";
             this.CHK_SWP.UseVisualStyleBackColor = true;
             // 
             // groupBox1
@@ -341,6 +341,26 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "UDP Configuration";
             // 
+            // CHK_UDP
+            // 
+            this.CHK_UDP.AutoSize = true;
+            this.CHK_UDP.Location = new System.Drawing.Point(14, 22);
+            this.CHK_UDP.Name = "CHK_UDP";
+            this.CHK_UDP.Size = new System.Drawing.Size(85, 17);
+            this.CHK_UDP.TabIndex = 23;
+            this.CHK_UDP.Text = "Enable UDP";
+            this.CHK_UDP.UseVisualStyleBackColor = true;
+            this.CHK_UDP.CheckedChanged += new System.EventHandler(this.CHK_UDP_CheckedChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 48);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(52, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "UDP Port";
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -349,15 +369,6 @@
             this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 20;
             this.label7.Text = "Broadcast IP";
-            // 
-            // txtIP
-            // 
-            this.txtIP.Enabled = false;
-            this.txtIP.Location = new System.Drawing.Point(113, 72);
-            this.txtIP.Name = "txtIP";
-            this.txtIP.Size = new System.Drawing.Size(171, 20);
-            this.txtIP.TabIndex = 21;
-            this.txtIP.Text = "127.0.0.1";
             // 
             // UDPPort
             // 
@@ -382,25 +393,14 @@
             0,
             0});
             // 
-            // label3
+            // txtIP
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 48);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(52, 13);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "UDP Port";
-            // 
-            // CHK_UDP
-            // 
-            this.CHK_UDP.AutoSize = true;
-            this.CHK_UDP.Location = new System.Drawing.Point(14, 22);
-            this.CHK_UDP.Name = "CHK_UDP";
-            this.CHK_UDP.Size = new System.Drawing.Size(85, 17);
-            this.CHK_UDP.TabIndex = 23;
-            this.CHK_UDP.Text = "Enable UDP";
-            this.CHK_UDP.UseVisualStyleBackColor = true;
-            this.CHK_UDP.CheckedChanged += new System.EventHandler(this.CHK_UDP_CheckedChanged);
+            this.txtIP.Enabled = false;
+            this.txtIP.Location = new System.Drawing.Point(113, 72);
+            this.txtIP.Name = "txtIP";
+            this.txtIP.Size = new System.Drawing.Size(171, 20);
+            this.txtIP.TabIndex = 21;
+            this.txtIP.Text = "127.0.0.1";
             // 
             // groupBox2
             // 
@@ -410,13 +410,24 @@
             this.groupBox2.Controls.Add(this.CHK_SWP_X);
             this.groupBox2.Location = new System.Drawing.Point(12, 215);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(302, 69);
+            this.groupBox2.Size = new System.Drawing.Size(302, 88);
             this.groupBox2.TabIndex = 28;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MMF Configuration";
             // 
+            // CHK_YAW
+            // 
+            this.CHK_YAW.AutoSize = true;
+            this.CHK_YAW.Location = new System.Drawing.Point(12, 22);
+            this.CHK_YAW.Name = "CHK_YAW";
+            this.CHK_YAW.Size = new System.Drawing.Size(83, 17);
+            this.CHK_YAW.TabIndex = 26;
+            this.CHK_YAW.Text = "Enable Yaw";
+            this.CHK_YAW.UseVisualStyleBackColor = true;
+            // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.CHK_YAW);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.CalAmount);
@@ -424,17 +435,17 @@
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Controls.Add(this.txtDeadZone);
             this.groupBox3.Controls.Add(this.deadzone);
-            this.groupBox3.Location = new System.Drawing.Point(12, 290);
+            this.groupBox3.Location = new System.Drawing.Point(12, 303);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(302, 136);
+            this.groupBox3.Size = new System.Drawing.Size(302, 142);
             this.groupBox3.TabIndex = 29;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Settings and sensivity";
+            this.groupBox3.Text = "Options";
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Controls.Add(this.comboBox1);
+            this.groupBox4.Controls.Add(this.CMB_Serial);
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.baudComboBox);
             this.groupBox4.Controls.Add(this.CMB_RELOAD);
@@ -460,7 +471,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Witmotion UDP Broadcast Tool";
+            this.Text = "Witmotion UDP and MMF Tool";
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.deadzone)).EndInit();
@@ -484,7 +495,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox CMB_Serial;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button CNT_Button;
@@ -518,6 +529,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.CheckBox CHK_YAW;
     }
 }
 

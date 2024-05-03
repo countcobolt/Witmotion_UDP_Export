@@ -28,6 +28,8 @@ namespace Motion_Sim
         public int cal_count = 50;
         public double Total_X = 0;
         public double Total_Y = 0;
+        public double Total_Z = 0;
+
 
         public bool EnableRefreshDataTh { get; private set; }
         public Form1()
@@ -39,7 +41,7 @@ namespace Motion_Sim
             toolStripStatusLabel2.Text = "";
             cal_count = (int)CalAmount.Value;
             Recalibate.Enabled = false;
-            CNT_Button.Enabled = false;
+            //CNT_Button.Enabled = false;
             CMB_RELOAD.Font= new Font("Wingdings 3", 10, FontStyle.Bold);
             CMB_RELOAD.Text = Char.ConvertFromUtf32(81); // or 80
             this.KeyPreview = true; // Enables form-level key events
@@ -108,10 +110,10 @@ namespace Motion_Sim
         }
         private void combo_load_ports()
         {
-            comboBox1.Items.Clear();
-            foreach ( var i in SerialPort.GetPortNames()) 
-            { 
-                comboBox1.Items.Add( i );   
+            CMB_Serial.Items.Clear();
+            foreach ( var i in System.IO.Ports.SerialPort.GetPortNames()) 
+            {
+                CMB_Serial.Items.Add( i );   
             }
         }
         private void combo_load_bauds()
@@ -122,7 +124,7 @@ namespace Motion_Sim
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void CNT_Button_Click(object sender, EventArgs e)
         {
             if (CNT_Button.Text == "Disconnect")
             {
@@ -148,7 +150,7 @@ namespace Motion_Sim
                 int baudrate;
                 try
                 {
-                    portName = (string)comboBox1.SelectedItem;
+                    portName = (string)CMB_Serial.SelectedItem;
                     baudrate = (int)baudComboBox.SelectedItem;
                 }
                 catch (Exception ex)
@@ -204,6 +206,7 @@ namespace Motion_Sim
                     {
                         Total_X += (double)JY901.GetDeviceData(WitSensorKey.AngleX);
                         Total_Y += (double)JY901.GetDeviceData(WitSensorKey.AngleY);
+                        Total_Z += (double)JY901.GetDeviceData(WitSensorKey.AngleZ);
                         toolStripStatusLabel1.Text = cal_count + " Calibrating";
                     }
                     catch ( Exception ex) 
@@ -219,8 +222,10 @@ namespace Motion_Sim
                 {
                     Total_X = Total_X / (int)CalAmount.Value;
                     Total_Y = Total_Y / (int)CalAmount.Value;
+                    Total_Z = Total_Z / (int)CalAmount.Value;
                     calibrated = true;
-                    toolStripStatusLabel1.Text = "Calibrated X : " + Total_X.ToString("F2") + " Y:" + Total_Y.ToString("F2");
+                    //toolStripStatusLabel1.Text = "Calibrated X : " + Total_X.ToString("F2") + " Y:" + Total_Y.ToString("F2") + " Z:" + Total_Z.ToString("F2");
+                    toolStripStatusLabel1.Text = "Calibrated ";
                     CNT_Button.BackColor = Color.LightGreen;
                     CNT_Button.Invoke((MethodInvoker)delegate {
                         CNT_Button.Text = "Disconnect";
@@ -232,21 +237,22 @@ namespace Motion_Sim
                 }
                 else
                 {
-                    (Int32 currentX, Int32 currentY) = GetDeviceDataCST(JY901);
+                    (Int32 currentX, Int32 currentY, Int32 currentZ) = GetDeviceDataCST(JY901);
                     if (CHK_SWP_X.Checked) { currentX = -currentX; }
                     if (CHK_SWP_Y.Checked) { currentY = -currentY; }
-                    if (CHK_SWP.Checked)
-                    {
+                    if (!CHK_YAW.Checked) { currentZ = 0; }
+                    if (CHK_SWP.Checked) { currentZ = -currentZ; }
+                /*    {
                         Int32 temp = currentX;
                         currentX = currentY;
                         currentY = temp;
-                    }
+                    }*/
                     MmfData data = new MmfData
                     {
                         sway = 0.0,     // Assign some value to sway
                         surge = 0.0,    // Assign some value to surge
                         heave = 0.0,    // Assign some value to heave
-                        yaw = 0.0,      // Assign some value to yaw
+                        yaw = (double)currentZ / 100,      // Assign some value to yaw
                         roll = (double)currentY/100,     // Assign some value to roll
                         pitch = (double)currentX/100    // Assign some value to pitch
                     };
@@ -254,11 +260,13 @@ namespace Motion_Sim
                     if (CHK_UDP.Checked) { 
                         byte[] currentXBytes = BitConverter.GetBytes(currentX);
                         byte[] currentYBytes = BitConverter.GetBytes(currentY);
+                        byte[] currentZBytes = BitConverter.GetBytes(currentZ);
                         try
                         {
-                            byte[] combinedBytes = new byte[currentXBytes.Length + currentYBytes.Length];
+                            byte[] combinedBytes = new byte[currentXBytes.Length + currentYBytes.Length + currentZBytes.Length];
                             Buffer.BlockCopy(currentXBytes, 0, combinedBytes, 0, currentXBytes.Length);
                             Buffer.BlockCopy(currentYBytes, 0, combinedBytes, currentXBytes.Length, currentYBytes.Length);
+                            Buffer.BlockCopy(currentZBytes, 0, combinedBytes, currentXBytes.Length + currentYBytes.Length, currentZBytes.Length);
                             SendDataOverUDP(combinedBytes);
                         }
                         catch (Exception ex)
@@ -266,7 +274,8 @@ namespace Motion_Sim
                             Console.WriteLine("An error occurred while sending over UDP: " + ex.Message);
                         }
                     }
-                    toolStripStatusLabel2.Text = "CX=" + ((double)currentX / 100).ToString() + " CY= " + ((double)currentY / 100).ToString();
+                    toolStripStatusLabel2.Text = "CX=" + ((double)currentX / 100).ToString() + " CY= " + ((double)currentY / 100).ToString() ;
+                    if (CHK_YAW.Checked) { toolStripStatusLabel2.Text = toolStripStatusLabel2.Text + " CZ= " + ((double)currentZ / 100).ToString();  }
                 }
                 Thread.Sleep((int)NUP_refresh.Value);
             }
@@ -307,10 +316,11 @@ namespace Motion_Sim
 
 //THIS FUNCTION CAN BE REWRITTEN AND REMOVE *100
 
-        private (Int32,Int32) GetDeviceDataCST(JY901 JY901)
+        private (Int32,Int32,Int32) GetDeviceDataCST(JY901 JY901)
         {
             Int32 current_X =(Int32)(Math.Round((double)(JY901.GetDeviceData(WitSensorKey.AngleX)) - Total_X, 2)*100);
             Int32 current_Y =(Int32)(Math.Round((double)(JY901.GetDeviceData(WitSensorKey.AngleY)) - Total_Y,2)*100);
+            Int32 current_Z = (Int32)(Math.Round((double)(JY901.GetDeviceData(WitSensorKey.AngleZ)) - Total_Z, 2) * 100);
             Int32 deadzoneValue = 0;
             deadzone.Invoke(new Action(() =>
             {
@@ -324,7 +334,11 @@ namespace Motion_Sim
             {
                 current_Y = 0;
             }
-            return (current_X, current_Y);
+            if (Math.Abs(current_Z) < (deadzoneValue / 20))
+            {
+                current_Z = 0;
+            }
+            return (current_X, current_Y,current_Z);
         }
 
         private void deadzone_Scroll(object sender, EventArgs e)
@@ -340,6 +354,7 @@ namespace Motion_Sim
             cal_count = value;
             Total_X = 0;
             Total_Y = 0;
+            Total_Z = 0;
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -363,18 +378,7 @@ namespace Motion_Sim
             Application.Exit();
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (comboBox1.SelectedIndex >= 0 )
-            { CNT_Button.Enabled = true;  }     
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
+        private void CMB_RELOAD_Click_1(object sender, EventArgs e)
         {
             combo_load_ports();
         }
@@ -390,6 +394,11 @@ namespace Motion_Sim
                 UDPPort.Enabled = true;
                 txtIP.Enabled = true;
             }
+        }
+
+        private void CMD_Serial_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
