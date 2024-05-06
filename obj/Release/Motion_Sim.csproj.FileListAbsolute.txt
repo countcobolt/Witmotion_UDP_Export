@@ -11,3 +11,4 @@ C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.cspr
 C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.csproj.Up2Date
 C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.exe
 C:\Users\casterst\source\repos\Motion_Sim\Motion_Sim\obj\Release\Motion_Sim.pdb
+C:\Users\casterst\Downloads\motion_sim_source\Motion_Sim\Motion_Sim\bin\Release\SlimDX.dll

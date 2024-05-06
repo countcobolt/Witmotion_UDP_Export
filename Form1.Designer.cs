@@ -45,6 +45,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setCalibrationJoystickToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setRecalibrationJoystickToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label6 = new System.Windows.Forms.Label();
             this.NUP_refresh = new System.Windows.Forms.NumericUpDown();
@@ -82,7 +85,6 @@
             this.CMB_Serial.Name = "CMB_Serial";
             this.CMB_Serial.Size = new System.Drawing.Size(139, 21);
             this.CMB_Serial.TabIndex = 0;
-            this.CMB_Serial.SelectedIndexChanged += new System.EventHandler(this.CMD_Serial_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -217,6 +219,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.configToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -238,6 +241,29 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // configToolStripMenuItem
+            // 
+            this.configToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setCalibrationJoystickToolStripMenuItem,
+            this.setRecalibrationJoystickToolStripMenuItem});
+            this.configToolStripMenuItem.Name = "configToolStripMenuItem";
+            this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
+            this.configToolStripMenuItem.Text = "Config";
+            // 
+            // setCalibrationJoystickToolStripMenuItem
+            // 
+            this.setCalibrationJoystickToolStripMenuItem.Name = "setCalibrationJoystickToolStripMenuItem";
+            this.setCalibrationJoystickToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.setCalibrationJoystickToolStripMenuItem.Text = "Set Calibration Joystick";
+            this.setCalibrationJoystickToolStripMenuItem.Click += new System.EventHandler(this.setCalibrationJoystickToolStripMenuItem_Click);
+            // 
+            // setRecalibrationJoystickToolStripMenuItem
+            // 
+            this.setRecalibrationJoystickToolStripMenuItem.Name = "setRecalibrationJoystickToolStripMenuItem";
+            this.setRecalibrationJoystickToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.setRecalibrationJoystickToolStripMenuItem.Text = "Set Recalibration Joystick";
+            this.setRecalibrationJoystickToolStripMenuItem.Click += new System.EventHandler(this.setRecalibrationJoystickToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -530,6 +556,9 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox CHK_YAW;
+        private System.Windows.Forms.ToolStripMenuItem configToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setCalibrationJoystickToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setRecalibrationJoystickToolStripMenuItem;
     }
 }
 

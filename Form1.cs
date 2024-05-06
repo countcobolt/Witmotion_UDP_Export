@@ -12,9 +12,17 @@ using Wit.SDK.Device.Sensor.Device.Utils;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using System.Threading.Tasks;
+using System.Runtime.Remoting.Contexts;
+using System.Security.Cryptography.X509Certificates;
+using System.Drawing.Text;
+
 
 namespace Motion_Sim
 {
+
     public struct MmfData
     {
         public double sway, surge, heave, yaw, roll, pitch;
@@ -29,68 +37,116 @@ namespace Motion_Sim
         public double Total_X = 0;
         public double Total_Y = 0;
         public double Total_Z = 0;
-
+        static string settingsFilePath = "settings.json";
+        Dictionary<string, object> userSettings = LoadSettings();
+        System.Windows.Forms.NumericUpDown[] numericBoxes;
+        System.Windows.Forms.CheckBox[] checkboxes;
+        JoystickHandler joystickHandler = new JoystickHandler();
+        private CancellationTokenSource cancellationTokenSource;
+        JoystickMessageBox myMessageBox = new JoystickMessageBox();
 
         public bool EnableRefreshDataTh { get; private set; }
         public Form1()
-        {
+        {          
             InitializeComponent();
             combo_load_ports();
             combo_load_bauds();
-            baudComboBox.SelectedItem = 115200;
-            toolStripStatusLabel2.Text = "";
-            cal_count = (int)CalAmount.Value;
-            Recalibate.Enabled = false;
-            //CNT_Button.Enabled = false;
-            CMB_RELOAD.Font= new Font("Wingdings 3", 10, FontStyle.Bold);
-            CMB_RELOAD.Text = Char.ConvertFromUtf32(81); // or 80
-            this.KeyPreview = true; // Enables form-level key events
-            this.KeyDown += Form1_KeyDown; // Event handler for key down events
-            ToolTip toolTip1 = new ToolTip();
-
-            // Set up the delays for the tooltip
-            toolTip1.AutoPopDelay = 5000;
-            toolTip1.InitialDelay = 1000;
-            toolTip1.ReshowDelay = 500;
-
-            // Force the tooltip text to be displayed whether or not the form is active.
-            toolTip1.ShowAlways = true;
-
-            // Set up the tooltip text for the button
-            toolTip1.SetToolTip(CNT_Button, "This connects to the sensor and starts sending data over the UDP Port. Shortcut is CTRL+ALT+F12");
-            ToolTip toolTip2 = new ToolTip();
-
-            // Set up the delays for the tooltip
-            toolTip2.AutoPopDelay = 5000;
-            toolTip2.InitialDelay = 1000;
-            toolTip2.ReshowDelay = 500;
-
-            // Force the tooltip text to be displayed whether or not the form is active.
-            toolTip2.ShowAlways = true;
-
-            // Set up the tooltip text for the button
-            toolTip2.SetToolTip(Recalibate, "This button recalibrates the sensor. Shortcut : CTRL+ALT+F11");
+            set_ui();
+            cancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => joystickHandler.HandleInput(ButtonPressedCallback, cancellationTokenSource.Token));
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private void ButtonPressedCallback(Guid joystickGuid, int buttonIndex)
         {
-            if (e.Control && e.Alt && e.KeyCode == Keys.F12)
-            {
-                // Check if the button is enabled and visible
-                if (CNT_Button.Enabled && CNT_Button.Visible)
+            // This function will be called whenever a button is pressed
+            Console.WriteLine($"Joystick ID: {joystickGuid}");
+            Console.WriteLine($"Button {buttonIndex + 1} pressed.");
+            string Guid_Text = userSettings.ContainsKey("joystickID") ? (string)userSettings["joystickID"] : "";
+            int buttonIndex_stored = userSettings.ContainsKey("joystickButton") ? Convert.ToInt32(userSettings["joystickButton"]) : -1;
+            string Guid_Text_CAL = userSettings.ContainsKey("joystickID_CAL") ? (string)userSettings["joystickID_CAL"] : "";
+            int buttonIndex_stored_CAL = userSettings.ContainsKey("joystickButton_CAL") ? Convert.ToInt32(userSettings["joystickButton_CAL"]) : -1;
+            // Perform any actions you want when a button is pressed
+            if (joystickGuid == new Guid(Guid_Text) && buttonIndex == buttonIndex_stored)
+            {            
+                if (CNT_Button.InvokeRequired)
                 {
-                    CNT_Button.PerformClick(); // Simulate button click
+                    // Invoke the performClick method on the UI thread
+                    CNT_Button.Invoke((Action)(() => CNT_Button.PerformClick()));                    
+                }
+                else
+                {
+                    // Call the performClick method directly
+                    CNT_Button.PerformClick();
+                }
+            if (joystickGuid == new Guid(Guid_Text_CAL) && buttonIndex == buttonIndex_stored_CAL)
+            {
+                if (Recalibate.InvokeRequired)
+                {
+                        // Invoke the performClick method on the UI thread
+                        Recalibate.Invoke((Action)(() => Recalibate.PerformClick()));
+                }
+                else
+                {
+                        // Call the performClick method directly
+                        Recalibate.PerformClick();
                 }
             }
-            if (e.Control && e.Alt && e.KeyCode == Keys.F11)
-            {
-                // Check if the button is enabled and visible
-                if (Recalibate.Enabled && Recalibate.Visible)
-                {
-                    Recalibate.PerformClick(); // Simulate button click
-                }
             }
         }
+        private void Select_ReCalibration_Button(Guid joystickGuid, int buttonIndex)
+        {
+            myMessageBox.Invoke((Action)(() => myMessageBox.Hide()));
+            Console.WriteLine($"Joystick ID: {joystickGuid}");
+            Console.WriteLine($"Button {buttonIndex + 1} pressed.");
+            MessageBox.Show("New button assigned: " + buttonIndex + "  :  " + joystickGuid);
+            userSettings["joystickID_CAL"] = joystickGuid.ToString();
+            userSettings["joystickButton_CAL"] = buttonIndex.ToString();
+            SaveSetting();
+            LoadSettings();
+            StopHandlingInput();
+            cancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => joystickHandler.HandleInput(ButtonPressedCallback, cancellationTokenSource.Token));
+        }
+        private void Select_Calibration_Button(Guid joystickGuid, int buttonIndex)
+        {
+            myMessageBox.Invoke((Action)(() => myMessageBox.Hide()));
+            Console.WriteLine($"Joystick ID: {joystickGuid}");
+            Console.WriteLine($"Button {buttonIndex + 1} pressed.");
+            MessageBox.Show("New button assigned: " + buttonIndex + "  :  " + joystickGuid);
+            userSettings["joystickID"] = joystickGuid.ToString();
+            userSettings["joystickButton"] = buttonIndex.ToString();
+            SaveSetting();
+            LoadSettings();
+            StopHandlingInput();
+            cancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => joystickHandler.HandleInput(ButtonPressedCallback, cancellationTokenSource.Token));
+        }
+
+        private void StopHandlingInput()
+        {
+            // Cancel the task by cancelling the cancellation token
+            cancellationTokenSource.Cancel();
+        }
+
+        static void SaveSettings(Dictionary<string, object> settings)
+        {
+            string json = JsonConvert.SerializeObject(settings);
+            File.WriteAllText(settingsFilePath, json);
+        }
+
+        static Dictionary<string, object> LoadSettings()
+        {
+            if (File.Exists(settingsFilePath))
+            {
+                string json = File.ReadAllText(settingsFilePath);
+                return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            }
+            else
+            {
+                return new Dictionary<string, object>();
+            }
+        }
+
         private void SendDataOverUDP(byte[] data)
         {
             try
@@ -116,6 +172,30 @@ namespace Motion_Sim
                 CMB_Serial.Items.Add( i );   
             }
         }
+        private void set_ui()
+        {
+            baudComboBox.SelectedItem = 115200;
+            toolStripStatusLabel2.Text = "";
+            cal_count = (int)CalAmount.Value;
+            Recalibate.Enabled = false;
+            CMB_RELOAD.Font = new Font("Wingdings 3", 10, FontStyle.Bold);
+            CMB_RELOAD.Text = Char.ConvertFromUtf32(81); // or 80
+
+            numericBoxes = new System.Windows.Forms.NumericUpDown[] { CalAmount, NUP_refresh, UDPPort };
+            foreach (NumericUpDown numericBox in numericBoxes)
+            {
+                string key = numericBox.Name;
+                numericBox.Value = userSettings.ContainsKey(key) ? Convert.ToDecimal(userSettings[key]) : numericBox.Value;
+            }
+            checkboxes = new System.Windows.Forms.CheckBox[] { CHK_MMF, CHK_UDP, CHK_SWP, CHK_SWP_Y, CHK_SWP_X, CHK_YAW };
+            foreach (System.Windows.Forms.CheckBox checkbox in checkboxes)
+            {
+                string key = checkbox.Name;
+                checkbox.Checked = userSettings.ContainsKey(key) ? (bool)userSettings[key] : checkbox.Checked;
+            }
+            txtIP.Text = userSettings.ContainsKey("txtIP") ? (string)userSettings["txtIP"] : txtIP.Text;
+        }
+
         private void combo_load_bauds()
         {
             for (int i = 0; i < SupportBaudRateList.Count; i++)
@@ -123,25 +203,23 @@ namespace Motion_Sim
                 baudComboBox.Items.Add(SupportBaudRateList[i]);
             }
         }
-
-        private void CNT_Button_Click(object sender, EventArgs e)
-        {
+        private void connect() { 
             if (CNT_Button.Text == "Disconnect")
-            {
-                if (JY901.IsOpen())
                 {
-                   try 
-                    { 
-                        JY901.Close();
-                        CNT_Button.Text = "Connect and broadcast";
-                        CNT_Button.BackColor = default;
-                        Recalibate.Enabled = false;
-                    } 
-                    catch (Exception ex)  
-                    { 
-                       MessageBox.Show(ex.Message);  
+                    if (JY901.IsOpen())
+                    {
+                        try 
+                        { 
+                            JY901.Close();
+                            CNT_Button.Text = "Connect and broadcast";
+                            CNT_Button.BackColor = default;
+                            Recalibate.Enabled = false;
+                        } 
+                        catch (Exception ex)  
+                        { 
+                            MessageBox.Show(ex.Message);  
+                        }
                     }
-                }
 
             }
             else
@@ -159,41 +237,41 @@ namespace Motion_Sim
                     return;
                 }
                 if (JY901.IsOpen())
-                {
-                    return;
-                }
-                try
-                {
-                    JY901.SetPortName(portName);
-                    JY901.SetBaudrate(baudrate);
-                    JY901.Open();
-                    if (JY901.IsOpen() == false)
                     {
                         return;
                     }
-                    try
+                try
                     {
-                        JY901.UnlockReg();
-                        JY901.SetReturnRate(0x0B);
-                        JY901.SetBandWidth(0x00);
-                        Thread thread = new Thread(RefreshDataTh);
-                        thread.IsBackground = true;
-                        EnableRefreshDataTh = true;
-                        thread.Start();
-                        CNT_Button.BackColor = Color.Yellow;
-                        calibrated = false;
-                        cal_count = (int)CalAmount.Value;
+                        JY901.SetPortName(portName);
+                        JY901.SetBaudrate(baudrate);
+                        JY901.Open();
+                            if (JY901.IsOpen() == false)
+                            {
+                                return;
+                            }
+                        try
+                        {
+                            JY901.UnlockReg();
+                            JY901.SetReturnRate(0x0B);
+                            JY901.SetBandWidth(0x00);
+                            Thread thread = new Thread(RefreshDataTh);
+                            thread.IsBackground = true;
+                            EnableRefreshDataTh = true;
+                            thread.Start();
+                            CNT_Button.BackColor = Color.Yellow;
+                            calibrated = false;
+                            cal_count = (int)CalAmount.Value;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
                     }
-                    catch (Exception ex)
+                catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
+                        return;
                     }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    return;
-                }
             }
         }
         private void RefreshDataTh()
@@ -362,6 +440,21 @@ namespace Motion_Sim
             MessageBox.Show("Witmotion to UDP software. Only read Pitch and roll. Open source license GPL 3.0. Feel free to modify. Original dev: steve@blakstraat11.be");
                 }
 
+        private void SaveSetting()
+        {
+            userSettings["txtIP"] = txtIP.Text.ToString();
+            foreach (System.Windows.Forms.CheckBox checkbox in checkboxes)
+            {
+                userSettings[checkbox.Name] = checkbox.Checked;
+            }
+            foreach (NumericUpDown numericBox in numericBoxes)
+            {
+                string key = numericBox.Name;
+                int value = (int)numericBox.Value;
+                userSettings[key] = value;
+            }
+            SaveSettings(userSettings);
+        }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (JY901.IsOpen())
@@ -375,6 +468,8 @@ namespace Motion_Sim
                     MessageBox.Show(ex.Message);
                 }
             }
+            SaveSetting();
+            joystickHandler.Dispose();
             Application.Exit();
         }
 
@@ -396,9 +491,27 @@ namespace Motion_Sim
             }
         }
 
-        private void CMD_Serial_SelectedIndexChanged(object sender, EventArgs e)
+        private void setCalibrationJoystickToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            StopHandlingInput();
+            myMessageBox.SetMessage("Press button on joystick for calibration");
+            myMessageBox.Show();
+            cancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => joystickHandler.HandleInput(Select_Calibration_Button, cancellationTokenSource.Token));
+        }
 
+        private void setRecalibrationJoystickToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StopHandlingInput();
+            myMessageBox.SetMessage("Press button on joystick for recalibration");
+            myMessageBox.Show();
+            cancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => joystickHandler.HandleInput(Select_ReCalibration_Button, cancellationTokenSource.Token));
+        }
+
+        private void CNT_Button_Click(object sender, EventArgs e)
+        {
+            connect();
         }
     }
 }
